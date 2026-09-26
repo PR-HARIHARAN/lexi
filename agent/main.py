@@ -1,7 +1,6 @@
 from langchain.chat_models import init_chat_model
 from langchain.agents import create_agent
 from langchain_tavily import TavilySearch
-from langchain.tools import tool
 from dotenv import load_dotenv
 
 
@@ -11,8 +10,9 @@ websearch_tool = TavilySearch()
 
 model = init_chat_model('ollama:qwen2.5:7b')
 
-agent = create_agent(model=model,
-                    system_prompt="""
+agent = create_agent(
+    model=model,
+    system_prompt="""
 You are Lexi, an AI legal research assistant specializing in Indian law.
 
 - Default to Indian law unless specified otherwise.
@@ -37,16 +37,22 @@ Format:
 
 Be precise, practical, and concise.
 """,
-                     tools=[websearch_tool])
+    tools=[websearch_tool],
+)
 
-while (user_input := input("\nAsk your query (or 'q' to quit): ")) != "q":
-    print()
-    
 
-    response = agent.invoke({
-        "messages": [
-            {"role": "user", "content": user_input}
-        ]
-    })
-    
-    print(response['messages'][-1].content)
+def main():
+    while (user_input := input("\nAsk your query (or 'q' to quit): ")) != "q":
+        print()
+
+        response = agent.invoke({
+            "messages": [
+                {"role": "user", "content": user_input}
+            ]
+        })
+
+        print(response["messages"][-1].content)
+
+
+if __name__ == "__main__":
+    main()
